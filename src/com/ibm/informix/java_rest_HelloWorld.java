@@ -78,7 +78,7 @@ public class java_rest_HelloWorld {
 		
 		JsonObject createCollection = Json.createObjectBuilder()
 				.add("name", "mycollection").build();
-		reply = restAPI.post(URL + "dbTest/", createCollection);
+		reply = restAPI.post(URL, createCollection);
 		
 		commands.add("\tCollection: "
 				+ reply);
@@ -93,7 +93,7 @@ public class java_rest_HelloWorld {
 		JsonObject createSingleInsert = Json.createObjectBuilder()
 				.add("firstname", "user1").add("lastname", "name1")
 				.add("number", 1).build();
-		reply = restAPI.post(URL + "dbTest/mycollection", createSingleInsert);
+		reply = restAPI.post(URL + "/mycollection", createSingleInsert);
 		
 		commands.add("\tSingle Insert Document: "
 				+ createSingleInsert.toString());
@@ -110,7 +110,7 @@ public class java_rest_HelloWorld {
 		JsonObject createMultipleInsertTwo = Json.createObjectBuilder()
 				.add("firstname", "user3").add("lastname", "name3")
 				.add("number", 3).build();
-		reply = restAPI.post(URL + "dbTest/mycollection",
+		reply = restAPI.post(URL + "/mycollection",
 				createMultipleInsertOne, createMultipleInsertTwo);
 		
 		commands.add("\tMultiple Insert Document: "
@@ -129,7 +129,7 @@ public class java_rest_HelloWorld {
 		
 		JsonObject listDocumentQuery = Json.createObjectBuilder()
 				.add("number", 3).build();
-		reply = restAPI.get(URL + "dbTest/mycollection", listDocumentQuery);
+		reply = restAPI.get(URL + "/mycollection", listDocumentQuery);
 		
 		commands.add("\tDocument Query: " 
 				+ listDocumentQuery.toString());
@@ -140,7 +140,7 @@ public class java_rest_HelloWorld {
 		//3.2 Find all documents in a collection
 		commands.add("3.2 Find all documents in a collection");
 		
-		reply = restAPI.get(URL + "dbTest/mycollection", null);
+		reply = restAPI.get(URL + "/mycollection", null);
 		
 		commands.add("\tList all Documents: "
 						+ reply);
@@ -154,7 +154,7 @@ public class java_rest_HelloWorld {
 				.add("number", 4).build();
 		JsonObject updateDocumentQuery = Json.createObjectBuilder()
 				.add("firstname", "user1").build();
-		reply = restAPI.put(URL + "dbTest/mycollection", updateDocument,
+		reply = restAPI.put(URL + "/mycollection", updateDocument,
 				updateDocumentQuery);
 		
 		commands.add("\tDocument Query: " 
@@ -170,7 +170,7 @@ public class java_rest_HelloWorld {
 		
 		JsonObject deleteDocumentQuery = Json.createObjectBuilder()
 				.add("number", 2).build();	
-		reply = restAPI.delete(URL + "dbTest/mycollection",deleteDocumentQuery);
+		reply = restAPI.delete(URL + "/mycollection",deleteDocumentQuery);
 		
 		commands.add("\tDocument Query: " 
 				+ deleteDocumentQuery.toString());
@@ -181,7 +181,7 @@ public class java_rest_HelloWorld {
 		//6 List all collections in a database
 		commands.add("\n6 List all collections in a database");
 		
-		reply = restAPI.get(URL + "dbTest", null);
+		reply = restAPI.get(URL, null);
 		
 		commands.add("\tList all Collections: " + reply);
 		//<------------------------------------->
@@ -189,7 +189,7 @@ public class java_rest_HelloWorld {
 		//7 Drop a collection
 		commands.add("\n7 Drop a collection");
 		
-		reply = restAPI.delete(URL + "dbTest/mycollection", null);
+		reply = restAPI.delete(URL + "/mycollection", null);
 				
 		commands.add("\tDelete Collection: " + reply);
 		//<------------------------------------->
@@ -199,27 +199,22 @@ public class java_rest_HelloWorld {
 	
 	public static void parseVcap() {
 
+		String serviceName = "timeseriesdatabase";
 		StringReader stringReader = new StringReader(
 				System.getenv("VCAP_SERVICES"));
 		JsonReader jsonReader = Json.createReader(stringReader);
 		JsonObject vcap = jsonReader.readObject();
 		System.out.println("vcap: " + vcap);
+		JsonObject credentials = vcap.getJsonArray(serviceName).getJsonObject(0)
+				.getJsonObject("credentials"); 
 		boolean ssl = false;
 		if (ssl) {
-			URL = vcap.getJsonArray("altadb-dev").getJsonObject(0)
-					.getJsonObject("credentials").getString("ssl_rest_url");
-			username = vcap.getJsonArray("altadb-dev").getJsonObject(0)
-					.getJsonObject("credentials").getString("username");
-			password = vcap.getJsonArray("altadb-dev").getJsonObject(0)
-					.getJsonObject("credentials").getString("password");
+			URL = credentials.getString("rest_url_ssl");
 		} else {
-			URL = vcap.getJsonArray("altadb-dev").getJsonObject(0)
-					.getJsonObject("credentials").getString("rest_url");
-			username = vcap.getJsonArray("altadb-dev").getJsonObject(0)
-						.getJsonObject("credentials").getString("username");
-			password = vcap.getJsonArray("altadb-dev").getJsonObject(0)
-					.getJsonObject("credentials").getString("password");
+			URL = credentials.getString("rest_url");
 		}
+		username = credentials.getString("username");
+		password = credentials.getString("password");
 		System.out.println(URL);
 		System.out.println(username);
 		System.out.println(password);
