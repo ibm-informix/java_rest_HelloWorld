@@ -50,7 +50,7 @@ Gradle -  Used to get dependencies.
 
  * Step 1: Clone repository to local machine
  
- * Step 2: Disable the parsing of the VCAP_SERICES and instead specify the connection information
+ * Step 2: Disable the parsing of the VCAP_SERVICES and instead specify the connection information
 
  * Step 3: Use gradle to copy runtime dependencies
 
