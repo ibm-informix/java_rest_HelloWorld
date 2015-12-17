@@ -1,4 +1,4 @@
-package com.ibm.informix;
+package src.com.ibm.informix;
 
 
 import java.io.IOException;

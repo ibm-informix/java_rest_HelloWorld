@@ -1,4 +1,4 @@
-package com.ibm.informix;
+package src.com.ibm.informix;
 /*-
  * Java Sample Application: Connection to Informix with REST
  */
@@ -48,9 +48,9 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 public class java_rest_HelloWorld {
 	
 	
-	public static String URL;
-	public static String username;
-	public static String password;
+	public static String URL = "";
+	public static String username = "";
+	public static String password = "";
 	public static List<String> commands = new ArrayList<String>();
 	
 	public static void main(String[] args) {
@@ -63,143 +63,152 @@ public class java_rest_HelloWorld {
 	}
 
 	public static List<String> doEverything() {
-		parseVcap();
-		String reply = "";
-		//get access to get,post,put,delete methods
-		REST restAPI = new REST(username, password);
-		
-		
-		commands.add("Connected to: " + URL);
-		commands.add("\nTopics");
-		
-		
-		//1 Create a collection
-		commands.add("\n1 Create a collection");
-		
-		JsonObject createCollection = Json.createObjectBuilder()
-				.add("name", "mycollection").build();
-		reply = restAPI.post(URL, createCollection);
-		
-		commands.add("\tCollection: "
-				+ reply);
-		//<------------------------------------->
-		
-		//2 Inserts
-		commands.add("\n2 Inserts");
-		
-		//2.1 Insert a single document into a collection
-		commands.add("2.1 Insert a single document into a collection");
-
-		JsonObject createSingleInsert = Json.createObjectBuilder()
-				.add("firstname", "user1").add("lastname", "name1")
-				.add("number", 1).build();
-		reply = restAPI.post(URL + "/mycollection", createSingleInsert);
-		
-		commands.add("\tSingle Insert Document: "
-				+ createSingleInsert.toString());
-		commands.add("\tCreate Single Document: "
-				+ reply);
-		//<------------------------------------->
-
-		//2.2 Insert multiple documents into a collection
-		commands.add("2.2 Insert multiple documents into a collection");
-		
-		JsonObject createMultipleInsertOne = Json.createObjectBuilder()
-				.add("firstname", "user2").add("lastname", "name2")
-				.add("number", 2).build();
-		JsonObject createMultipleInsertTwo = Json.createObjectBuilder()
-				.add("firstname", "user3").add("lastname", "name3")
-				.add("number", 3).build();
-		reply = restAPI.post(URL + "/mycollection",
-				createMultipleInsertOne, createMultipleInsertTwo);
-		
-		commands.add("\tMultiple Insert Document: "
-				+ createMultipleInsertOne.toString());
-		commands.add("\tMultiple Insert Document: "
-				+ createMultipleInsertTwo.toString());
-		commands.add("\tCreate Multiple Documents: "
-				+ reply);
-		//<------------------------------------->
-		
-		//3 Queries
-		commands.add("\n3 Queries");
-		
-		//3.1 Find documents in a collection that match a query condition
-		commands.add("3.1 Find documents in a collection that match a query condition");
-		
-		JsonObject listDocumentQuery = Json.createObjectBuilder()
-				.add("number", 3).build();
-		reply = restAPI.get(URL + "/mycollection", listDocumentQuery);
-		
-		commands.add("\tDocument Query: " 
-				+ listDocumentQuery.toString());
-		commands.add("\tList Document: "
-				+ reply);
-		//<------------------------------------->
-		
-		//3.2 Find all documents in a collection
-		commands.add("3.2 Find all documents in a collection");
-		
-		reply = restAPI.get(URL + "/mycollection", null);
-		
-		commands.add("\tList all Documents: "
-						+ reply);
-		//<------------------------------------->
-		
-		//4 Update documents in a collection
-		commands.add("\n4 Update documents in a collection");
-		
-		JsonObject updateDocument = Json.createObjectBuilder()
-				.add("firstname", "newuser").add("lastname", "newname")
-				.add("number", 4).build();
-		JsonObject updateDocumentQuery = Json.createObjectBuilder()
-				.add("firstname", "user1").build();
-		reply = restAPI.put(URL + "/mycollection", updateDocument,
-				updateDocumentQuery);
-		
-		commands.add("\tDocument Query: " 
-				+ updateDocumentQuery.toString());
-		commands.add("\tUpdate Document: " 
-				+ updateDocument.toString());
-		commands.add("\tUpdate Document: "
-				+ reply);
-		//<------------------------------------->
-		
-		//5 Delete documents in a collection
-		commands.add("\n5 Delete documents in a collection");
-		
-		JsonObject deleteDocumentQuery = Json.createObjectBuilder()
-				.add("number", 2).build();	
-		reply = restAPI.delete(URL + "/mycollection",deleteDocumentQuery);
-		
-		commands.add("\tDocument Query: " 
-				+ deleteDocumentQuery.toString());
-		commands.add("\tDelete Document: "
-				+ reply);
-		//<------------------------------------->
-		
-		//6 List all collections in a database
-		commands.add("\n6 List all collections in a database");
-		
-		reply = restAPI.get(URL, null);
-		
-		commands.add("\tList all Collections: " + reply);
-		//<------------------------------------->
-		
-		//7 Drop a collection
-		commands.add("\n7 Drop a collection");
-		
-		reply = restAPI.delete(URL + "/mycollection", null);
-				
-		commands.add("\tDelete Collection: " + reply);
-		//<------------------------------------->
-		
+		REST restAPI = null;
+		try {
+			parseVcap();
+			String reply = "";
+			//get access to get,post,put,delete methods
+			restAPI = new REST(username, password);
+			
+			
+			commands.add("Connected to: " + URL);
+			commands.add("\nTopics");
+			
+			
+			//1 Create a collection
+			commands.add("\n1 Create a collection");
+			
+			JsonObject createCollection = Json.createObjectBuilder()
+					.add("name", "mycollection").build();
+			reply = restAPI.post(URL, createCollection);
+			
+			commands.add("\tCollection: "
+					+ reply);
+			//<------------------------------------->
+			
+			//2 Inserts
+			commands.add("\n2 Inserts");
+			
+			//2.1 Insert a single document into a collection
+			commands.add("2.1 Insert a single document into a collection");
+	
+			JsonObject createSingleInsert = Json.createObjectBuilder()
+					.add("firstname", "user1").add("lastname", "name1")
+					.add("number", 1).build();
+			reply = restAPI.post(URL + "/mycollection", createSingleInsert);
+			
+			commands.add("\tSingle Insert Document: "
+					+ createSingleInsert.toString());
+			commands.add("\tCreate Single Document: "
+					+ reply);
+			//<------------------------------------->
+	
+			//2.2 Insert multiple documents into a collection
+			commands.add("2.2 Insert multiple documents into a collection");
+			
+			JsonObject createMultipleInsertOne = Json.createObjectBuilder()
+					.add("firstname", "user2").add("lastname", "name2")
+					.add("number", 2).build();
+			JsonObject createMultipleInsertTwo = Json.createObjectBuilder()
+					.add("firstname", "user3").add("lastname", "name3")
+					.add("number", 3).build();
+			reply = restAPI.post(URL + "/mycollection",
+					createMultipleInsertOne, createMultipleInsertTwo);
+			
+			commands.add("\tMultiple Insert Document: "
+					+ createMultipleInsertOne.toString());
+			commands.add("\tMultiple Insert Document: "
+					+ createMultipleInsertTwo.toString());
+			commands.add("\tCreate Multiple Documents: "
+					+ reply);
+			//<------------------------------------->
+			
+			//3 Queries
+			commands.add("\n3 Queries");
+			
+			//3.1 Find documents in a collection that match a query condition
+			commands.add("3.1 Find documents in a collection that match a query condition");
+			
+			JsonObject listDocumentQuery = Json.createObjectBuilder()
+					.add("number", 3).build();
+			reply = restAPI.get(URL + "/mycollection", listDocumentQuery);
+			
+			commands.add("\tDocument Query: " 
+					+ listDocumentQuery.toString());
+			commands.add("\tList Document: "
+					+ reply);
+			//<------------------------------------->
+			
+			//3.2 Find all documents in a collection
+			commands.add("3.2 Find all documents in a collection");
+			
+			reply = restAPI.get(URL + "/mycollection", null);
+			
+			commands.add("\tList all Documents: "
+							+ reply);
+			//<------------------------------------->
+			
+			//4 Update documents in a collection
+			commands.add("\n4 Update documents in a collection");
+			
+			JsonObject updateDocument = Json.createObjectBuilder()
+					.add("firstname", "newuser").add("lastname", "newname")
+					.add("number", 4).build();
+			JsonObject updateDocumentQuery = Json.createObjectBuilder()
+					.add("firstname", "user1").build();
+			reply = restAPI.put(URL + "/mycollection", updateDocument,
+					updateDocumentQuery);
+			
+			commands.add("\tDocument Query: " 
+					+ updateDocumentQuery.toString());
+			commands.add("\tUpdate Document: " 
+					+ updateDocument.toString());
+			commands.add("\tUpdate Document: "
+					+ reply);
+			//<------------------------------------->
+			
+			//5 Delete documents in a collection
+			commands.add("\n5 Delete documents in a collection");
+			
+			JsonObject deleteDocumentQuery = Json.createObjectBuilder()
+					.add("number", 2).build();	
+			reply = restAPI.delete(URL + "/mycollection",deleteDocumentQuery);
+			
+			commands.add("\tDocument Query: " 
+					+ deleteDocumentQuery.toString());
+			commands.add("\tDelete Document: "
+					+ reply);
+			//<------------------------------------->
+			
+			//6 List all collections in a database
+			commands.add("\n6 List all collections in a database");
+			
+			reply = restAPI.get(URL, null);
+			
+			commands.add("\tList all Collections: " + reply);
+			//<------------------------------------->
+			
+			//7 Drop a collection
+			commands.add("\n7 Drop a collection");
+			
+			reply = restAPI.delete(URL + "/mycollection", null);
+					
+			commands.add("\tDelete Collection: " + reply);
+			//<------------------------------------->
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			restAPI.closeClient();
+		}
 		return commands;
 	}
 	
 	public static void parseVcap() {
 
-		String serviceName = "timeseriesdatabase";
+		String serviceName = System.getenv("SERVICE_NAME");
+		if(serviceName == null || serviceName.length() == 0) {
+			serviceName = "timeseriesdatabase";
+		}
 		StringReader stringReader = new StringReader(
 				System.getenv("VCAP_SERVICES"));
 		JsonReader jsonReader = Json.createReader(stringReader);
@@ -352,5 +361,10 @@ class REST {
 		cookies.putAll(response.getCookies());
 		response.close();
 		return entity;
+	}
+	
+	//Close the Rest Client
+	public void closeClient() {
+		client.close();
 	}
 }
