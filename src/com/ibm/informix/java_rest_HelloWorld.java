@@ -1,4 +1,4 @@
-package src.com.ibm.informix;
+package com.ibm.informix;
 /*-
  * Java Sample Application: Connection to Informix with REST
  */
@@ -47,10 +47,14 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
 public class java_rest_HelloWorld {
 	
-	
+	// To run locally, set URL, username, and password here
 	public static String URL = "";
 	public static String username = "";
 	public static String password = "";
+	
+	// Service name for if credentials are parsed out of the Bluemix VCAP_SERVICES
+	public static String SERVICE_NAME = "timeseriesdatabase";
+	
 	public static List<String> commands = new ArrayList<String>();
 	
 	public static void main(String[] args) {
@@ -71,7 +75,7 @@ public class java_rest_HelloWorld {
 			restAPI = new REST(username, password);
 			
 			
-			commands.add("Connected to: " + URL);
+			commands.add("Connecting to: " + URL);
 			commands.add("\nTopics");
 			
 			
@@ -194,23 +198,36 @@ public class java_rest_HelloWorld {
 			reply = restAPI.delete(URL + "/mycollection", null);
 					
 			commands.add("\tDelete Collection: " + reply);
+			commands.add("\nDone");
 			//<------------------------------------->
 		} catch (Exception e) {
+			commands.add("ERROR: " + e);
 			e.printStackTrace();
+			System.out.println("-------------------------------------\n");
 		} finally {
-			restAPI.closeClient();
+			if (restAPI != null) {
+				restAPI.closeClient();
+			}
 		}
 		return commands;
 	}
 	
-	public static void parseVcap() {
-
+	public static void parseVcap() throws Exception {
+		if (URL != null && !URL.equals("")) {
+			// If URL is already set, use it as is
+			return;
+		}
+ 
+		// Otherwise parse URL and credentials from VCAP_SERVICES
 		String serviceName = System.getenv("SERVICE_NAME");
 		if(serviceName == null || serviceName.length() == 0) {
-			serviceName = "timeseriesdatabase";
+			serviceName = SERVICE_NAME;
 		}
-		StringReader stringReader = new StringReader(
-				System.getenv("VCAP_SERVICES"));
+		String vcapServices = System.getenv("VCAP_SERVICES");
+		if (vcapServices == null) {
+			throw new Exception("VCAP_SERVICES not found in the environment"); 
+		}
+		StringReader stringReader = new StringReader(vcapServices);
 		JsonReader jsonReader = Json.createReader(stringReader);
 		JsonObject vcap = jsonReader.readObject();
 		System.out.println("vcap: " + vcap);
@@ -239,14 +256,7 @@ class REST {
 	public REST(String user, String pass) {
 		HttpAuthenticationFeature feature = HttpAuthenticationFeature.universal(
 				user, pass);
-//		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(
-//				user, pass);
-//		HttpAuthenticationFeature feature = HttpAuthenticationFeature.digest(
-//				user, pass);
 		client.register(feature);
-		System.out.println(" --- New REST Client --- ");
-		System.out.println(user);
-		System.out.println(pass);
 	}
 
 	//GET
