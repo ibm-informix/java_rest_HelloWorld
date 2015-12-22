@@ -54,6 +54,7 @@ public class java_rest_HelloWorld {
 	
 	// Service name for if credentials are parsed out of the Bluemix VCAP_SERVICES
 	public static String SERVICE_NAME = "timeseriesdatabase";
+	public static boolean USE_SSL = false;
 	
 	public static List<String> commands = new ArrayList<String>();
 	
@@ -67,6 +68,8 @@ public class java_rest_HelloWorld {
 	}
 
 	public static List<String> doEverything() {
+		commands.clear();
+		
 		REST restAPI = null;
 		try {
 			parseVcap();
@@ -231,10 +234,12 @@ public class java_rest_HelloWorld {
 		JsonReader jsonReader = Json.createReader(stringReader);
 		JsonObject vcap = jsonReader.readObject();
 		System.out.println("vcap: " + vcap);
+		if (vcap.getJsonArray(serviceName) == null) {
+			throw new Exception("Service " + serviceName + " not found in VCAP_SERVICES");
+		}
 		JsonObject credentials = vcap.getJsonArray(serviceName).getJsonObject(0)
 				.getJsonObject("credentials"); 
-		boolean ssl = false;
-		if (ssl) {
+		if (USE_SSL) {
 			URL = credentials.getString("rest_url_ssl");
 		} else {
 			URL = credentials.getString("rest_url");
